@@ -3,16 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Météo</title>
+    <title>Application Météo Française</title>
+    
+    <!-- Meta tags pour PWA -->
+    <meta name="description" content="Application météo moderne avec prévisions pour les villes françaises">
+    <meta name="theme-color" content="#ffd100">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Météo FR">
+    
+    <!-- Liens PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHJ4PSI0IiBmaWxsPSIjMWExYTJlIi8+CjxwYXRoIGQ9Ik0xOCAxMGgtMS4yNkE4IDggMCAxIDAgOSAyMGg5YTUgNSAwIDAgMCAwLTEweiIgZmlsbD0iIzg3Y2VlYiIvPgo8Y2lyY2xlIGN4PSIxMiIgY3k9IjgiIHI9IjMiIGZpbGw9IiNmZmQ3MDAiLz4KPC9zdmc+Cg==">
+    
+    <!-- Préchargement des ressources critiques -->
+    <link rel="preload" href="./styles.css" as="style">
+    <link rel="preload" href="./script.js" as="script">
+    
+    <!-- CSS externe -->
+    <link rel="stylesheet" href="./styles.css">
+    
+    <!-- Styles critiques inline pour un chargement plus rapide -->
     <style>
+        /* Styles critiques pour éviter FOUC (Flash of Unstyled Content) */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e, #16213e);
             color: white;
             min-height: 100vh;
@@ -25,164 +47,19 @@
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border-radius: 24px;
-            width: 360px;
-            padding: 20px;
+            width: min(400px, 100vw - 40px);
+            padding: 24px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
-        .search-box {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        
-        input {
-            padding: 12px 16px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            flex: 1;
-            font-size: 16px;
-        }
-        
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        button {
-            background: #ffd100;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            margin-left: 10px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        /* Animation d'entrée pour éviter le saut de contenu */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .main-weather {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .temperature {
-            font-size: 80px;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-        
-        .condition {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .location {
-            font-size: 18px;
-            opacity: 0.8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-        
-        .high-low {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            margin: 15px 0;
-        }
-        
-        .high, .low {
-            display: flex;
-            align-items: center;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .high-low i {
-            margin-right: 5px;
-            font-size: 22px;
-        }
-        
-        .high {
-            color: #ffb700;
-        }
-        
-        .low {
-            color: #58caea;
-        }
-        
-        .hourly-forecast {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-            overflow-x: auto;
-            scrollbar-width: none;
-            padding-bottom: 5px;
-        }
-        
-        .hourly-forecast::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .hour-box {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            width: 70px;
-            padding: 12px 10px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        
-        .hour-box.active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .hour-box .time {
-            font-size: 14px;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-        
-        .hour-box .temp {
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-        
-        .weather-icon {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto;
-        }
-        
-        .hour-box .icon {
-            width: 30px;
-            height: 30px;
-        }
-        
-        .dots {
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 15px;
-        }
-        
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-        }
-        
-        .dot.active {
-            background: white;
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
@@ -200,7 +77,9 @@
         
         <div class="main-weather">
             <div class="weather-icon">
-                <img src="/api/placeholder/110/110" id="current-icon" alt="Météo actuelle">
+                <div id="current-icon">
+                    <!-- Icône SVG sera insérée ici par JavaScript -->
+                </div>
             </div>
             <div class="temperature"><span id="current-temp">24</span>°</div>
             <div class="condition" id="current-condition">Partiellement nuageux</div>
@@ -239,167 +118,56 @@
         </div>
     </div>
 
+    <!-- JavaScript externe -->
+    <script src="./script.js" defer></script>
+    
+    <!-- Gestion des erreurs de Service Worker -->
     <script>
-        // Données météo simulées (dans une application réelle, on utiliserait une API météo)
-        const weatherData = {
-            current: {
-                temp: 24,
-                condition: "Partiellement nuageux",
-                location: "Paris",
-                icon: getWeatherIcon("partly-cloudy"),
-                high: 17,
-                low: 4
-            },
-            hourly: [
-                { time: "Maint.", temp: 13, condition: "partly-cloudy-rain" },
-                { time: "16h", temp: 14, condition: "sunny" },
-                { time: "17h", temp: 12, condition: "partly-cloudy" },
-                { time: "18h", temp: 8, condition: "rainy" },
-                { time: "19h", temp: 9, condition: "thunder" },
-                { time: "20h", temp: 7, condition: "rainy" },
-                { time: "21h", temp: 6, condition: "cloudy" }
-            ],
-            locations: [
-                { name: "Paris", temp: 24, condition: "partly-cloudy" },
-                { name: "Lyon", temp: 22, condition: "sunny" },
-                { name: "Marseille", temp: 26, condition: "sunny" },
-                { name: "Bordeaux", temp: 20, condition: "rainy" },
-                { name: "Lille", temp: 18, condition: "cloudy" },
-                { name: "Strasbourg", temp: 19, condition: "partly-cloudy" },
-                { name: "Nantes", temp: 21, condition: "partly-cloudy" },
-                { name: "Nice", temp: 25, condition: "sunny" }
-            ]
-        };
-
-        // Fonction pour obtenir les icônes météo
-        function getWeatherIcon(condition) {
-            const iconPlaceholder = "/api/placeholder/30/30";
-            return iconPlaceholder;
-        }
-
-        // Initialiser l'application
-        function initApp() {
-            // Afficher les données actuelles
-            document.getElementById('current-temp').textContent = weatherData.current.temp;
-            document.getElementById('current-condition').textContent = weatherData.current.condition;
-            document.getElementById('current-location').textContent = weatherData.current.location;
-            document.getElementById('high-temp').textContent = weatherData.current.high;
-            document.getElementById('low-temp').textContent = weatherData.current.low;
-            
-            // Générer les prévisions horaires
-            const hourlyContainer = document.getElementById('hourly-forecast');
-            hourlyContainer.innerHTML = '';
-            
-            weatherData.hourly.forEach((hour, index) => {
-                const hourBox = document.createElement('div');
-                hourBox.className = `hour-box ${index === 0 ? 'active' : ''}`;
-                
-                hourBox.innerHTML = `
-                    <div class="time">${hour.time}</div>
-                    <div class="icon">
-                        <img src="${getWeatherIcon(hour.condition)}" alt="Météo ${hour.time}">
-                    </div>
-                    <div class="temp">${hour.temp}°</div>
-                `;
-                
-                hourlyContainer.appendChild(hourBox);
-            });
-            
-            // Ajouter l'événement de recherche
-            const searchBtn = document.getElementById('search-btn');
-            const searchInput = document.getElementById('search-input');
-            
-            searchBtn.addEventListener('click', () => {
-                searchLocation();
-            });
-            
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    searchLocation();
-                }
-            });
+        // Vérification de la compatibilité et gestion des erreurs
+        if (!('serviceWorker' in navigator)) {
+            console.warn('Service Worker non supporté par ce navigateur');
         }
         
-        // Fonction de recherche de lieu
-        function searchLocation() {
-            const input = document.getElementById('search-input');
-            const searchTerm = input.value.trim().toLowerCase();
-            
-            if (searchTerm === '') return;
-            
-            const location = weatherData.locations.find(loc => 
-                loc.name.toLowerCase().includes(searchTerm)
-            );
-            
-            if (location) {
-                // Mettre à jour les données actuelles
-                weatherData.current.temp = location.temp;
-                weatherData.current.condition = location.condition === 'sunny' ? 'Ensoleillé' : 
-                                               location.condition === 'partly-cloudy' ? 'Partiellement nuageux' :
-                                               location.condition === 'cloudy' ? 'Nuageux' :
-                                               location.condition === 'rainy' ? 'Pluvieux' : 'Orageux';
-                weatherData.current.location = location.name;
-                
-                // Générer de nouvelles valeurs aléatoires pour high/low
-                weatherData.current.high = Math.round(location.temp + 2 + Math.random() * 3);
-                weatherData.current.low = Math.round(location.temp - 8 - Math.random() * 3);
-                
-                // Mettre à jour l'affichage
-                document.getElementById('current-temp').textContent = location.temp;
-                document.getElementById('current-condition').textContent = weatherData.current.condition;
-                document.getElementById('current-location').textContent = location.name;
-                document.getElementById('high-temp').textContent = weatherData.current.high;
-                document.getElementById('low-temp').textContent = weatherData.current.low;
-                
-                // Générer de nouvelles prévisions horaires
-                updateHourlyForecast(location.temp);
-                
-                // Effacer l'entrée
-                input.value = '';
-            } else {
-                alert('Lieu non trouvé. Essayez une ville française comme Paris, Lyon, Marseille, etc.');
+        // Détection du mode hors-ligne
+        window.addEventListener('online', () => {
+            console.log('Connexion rétablie');
+            if (window.weatherApp) {
+                window.weatherApp.showNotification('Connexion rétablie', 'success');
             }
-        }
+        });
         
-        // Mettre à jour les prévisions horaires
-        function updateHourlyForecast(baseTemp) {
-            const conditions = ['sunny', 'partly-cloudy', 'cloudy', 'rainy', 'thunder', 'partly-cloudy-rain'];
-            const times = ['Maint.', '16h', '17h', '18h', '19h', '20h', '21h'];
-            
-            // Générer de nouvelles prévisions
-            weatherData.hourly = times.map((time, index) => {
-                // Diminuer progressivement la température
-                const tempVariation = index === 0 ? 0 : Math.random() * 2 - (index * 0.5);
-                const temp = Math.round(baseTemp + tempVariation - index);
-                
-                // Sélectionner une condition aléatoire
-                const condition = conditions[Math.floor(Math.random() * conditions.length)];
-                
-                return { time, temp, condition };
-            });
-            
-            // Mettre à jour l'affichage
-            const hourlyContainer = document.getElementById('hourly-forecast');
-            hourlyContainer.innerHTML = '';
-            
-            weatherData.hourly.forEach((hour, index) => {
-                const hourBox = document.createElement('div');
-                hourBox.className = `hour-box ${index === 0 ? 'active' : ''}`;
-                
-                hourBox.innerHTML = `
-                    <div class="time">${hour.time}</div>
-                    <div class="icon">
-                        <img src="${getWeatherIcon(hour.condition)}" alt="Météo ${hour.time}">
-                    </div>
-                    <div class="temp">${hour.temp}°</div>
-                `;
-                
-                hourlyContainer.appendChild(hourBox);
-            });
-        }
+        window.addEventListener('offline', () => {
+            console.log('Mode hors-ligne activé');
+            if (window.weatherApp) {
+                window.weatherApp.showNotification('Mode hors-ligne', 'info');
+            }
+        });
         
-        // Démarrer l'application au chargement
-        window.addEventListener('load', initApp);
+        // Affichage d'un message si JavaScript est désactivé
+        document.addEventListener('DOMContentLoaded', () => {
+            const noJsWarning = document.getElementById('no-js-warning');
+            if (noJsWarning) {
+                noJsWarning.style.display = 'none';
+            }
+        });
     </script>
+    
+    <!-- Message pour les utilisateurs sans JavaScript -->
+    <noscript>
+        <div id="no-js-warning" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff4757;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 500;
+            z-index: 9999;
+        ">
+            Cette application nécessite JavaScript pour fonctionner correctement.
+        </div>
+    </noscript>
 </body>
 </html>

@@ -1,0 +1,393 @@
+/* Reset et base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Variables CSS pour une maintenance plus facile */
+:root {
+    --primary-color: #ffd100;
+    --bg-gradient: linear-gradient(135deg, #1a1a2e, #16213e);
+    --container-bg: rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-bg-active: rgba(255, 255, 255, 0.2);
+    --text-primary: white;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --high-temp-color: #ffb700;
+    --low-temp-color: #58caea;
+    --shadow-primary: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --border-radius: 24px;
+    --border-radius-small: 20px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+/* Animation d'entrée pour le container */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container {
+    background: var(--container-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    width: min(400px, 100vw - 40px);
+    padding: 24px;
+    box-shadow: var(--shadow-primary);
+    animation: fadeInUp 0.6s ease-out;
+    transition: var(--transition);
+}
+
+.container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Barre de recherche optimisée */
+.search-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 32px;
+    gap: 12px;
+}
+
+input {
+    padding: 14px 18px;
+    border-radius: var(--border-radius-small);
+    border: 2px solid transparent;
+    outline: none;
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    flex: 1;
+    font-size: 16px;
+    transition: var(--transition);
+    backdrop-filter: blur(5px);
+}
+
+input:focus {
+    border-color: var(--primary-color);
+    background: var(--glass-bg-active);
+    transform: scale(1.02);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+button {
+    background: var(--primary-color);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(255, 209, 0, 0.3);
+}
+
+button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 209, 0, 0.4);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Section météo principale avec animations */
+.main-weather {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.weather-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.weather-icon:hover {
+    transform: scale(1.05) rotate(5deg);
+}
+
+.weather-icon img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.temperature {
+    font-size: clamp(64px, 15vw, 88px);
+    font-weight: 700;
+    margin: 16px 0;
+    background: linear-gradient(45deg, #fff, #ffd100);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+    transition: var(--transition);
+}
+
+.condition {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0.9;
+}
+
+.location {
+    font-size: 18px;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+/* Températures haute/basse améliorées */
+.high-low {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 48px;
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--glass-bg);
+    border-radius: 16px;
+    backdrop-filter: blur(5px);
+}
+
+.high, .low {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: 600;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.high:hover, .low:hover {
+    transform: scale(1.1);
+}
+
+.high {
+    color: var(--high-temp-color);
+}
+
+.low {
+    color: var(--low-temp-color);
+}
+
+/* Prévisions horaires avec scroll amélioré */
+.hourly-forecast {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) transparent;
+    padding: 8px 0 12px;
+}
+
+.hourly-forecast::-webkit-scrollbar {
+    height: 6px;
+}
+
+.hourly-forecast::-webkit-scrollbar-track {
+    background: var(--glass-bg);
+    border-radius: 3px;
+}
+
+.hourly-forecast::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 3px;
+}
+
+.hour-box {
+    background: var(--glass-bg);
+    border-radius: 20px;
+    width: 80px;
+    padding: 16px 12px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: var(--transition);
+    cursor: pointer;
+    border: 2px solid transparent;
+    backdrop-filter: blur(5px);
+}
+
+.hour-box:hover {
+    transform: translateY(-4px);
+    background: var(--glass-bg-active);
+    border-color: var(--primary-color);
+}
+
+.hour-box.active {
+    background: var(--glass-bg-active);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.hour-box .time {
+    font-size: 14px;
+    margin-bottom: 12px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.hour-box .temp {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 10px;
+    color: var(--primary-color);
+}
+
+.hour-box .icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hour-box .icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Indicateurs de pagination */
+.dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: var(--glass-bg);
+    border-radius: 50%;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.dot:hover {
+    background: var(--text-secondary);
+}
+
+.dot.active {
+    background: var(--primary-color);
+    transform: scale(1.2);
+}
+
+/* États de chargement */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading .temperature::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-color);
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Animation pour les changements de données */
+.data-update {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Responsive design amélioré */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        width: calc(100vw - 20px);
+    }
+    
+    .high-low {
+        gap: 32px;
+    }
+    
+    .hourly-forecast {
+        gap: 8px;
+    }
+    
+    .hour-box {
+        width: 70px;
+        padding: 12px 8px;
+    }
+}
+
+@media (max-height: 700px) {
+    .container {
+        margin: 10px 0;
+    }
+}
+
+/* Animations de transition pour les changements de ville */
+.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: var(--transition);
+}
+
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: var(--transition);
+}
